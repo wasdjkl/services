@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  page-spy-web:
+    image: ghcr.io/huolalatech/page-spy-web:release
+    container_name: page-spy-web
+    restart: always
+    ports:
+      - 6752:6752
