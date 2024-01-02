@@ -1,0 +1,65 @@
+  version: "3"
+
+  services:
+
+    watchtower:
+      container_name: watchtower
+      restart: unless-stopped
+      image: containrrr/watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+
+    cloudflared:
+      container_name: cloudflared
+      image: cloudflare/cloudflared
+      restart: unless-stopped
+      command: tunnel --no-autoupdate run
+      environment:
+        - TUNNEL_TOKEN=${TUNNEL_TOKEN}  
+    
+    dockge:
+      image: louislam/dockge:latest
+      container_name: dockge
+      restart: unless-stopped
+      expose:
+        - "5001"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./dockge:/app/data
+        - /root/services:/root/services
+      environment:
+        - DOCKGE_STACKS_DIR=/root/services
+    
+    deeplx:
+      image: ghcr.io/owo-network/deeplx:latest
+      restart: unless-stopped
+      expose:
+        - "1188"    
+    
+    page-spy-web:
+      image: ghcr.io/huolalatech/page-spy-web:release
+      container_name: page-spy-web
+      restart: unless-stopped
+      expose:
+        - "6752"
+
+    gitea:
+      image: gitea/gitea:1.21
+      container_name: gitea
+      restart: unless-stopped
+      volumes:
+        - ./gitea:/data
+        - /etc/timezone:/etc/timezone:ro
+        - /etc/localtime:/etc/localtime:ro
+      expose:
+        - "3000"
+
+    lobe-chat:
+      image: lobehub/lobe-chat
+      restart: unless-stopped
+      expose:
+       - "3210"
+      environment:
+        - OPENAI_API_KEY=${OPENAI_API_KEY}  
+        - OPENAI_PROXY_URL=${OPENAI_PROXY_URL}  
+        - ACCESS_CODE=${ACCESS_CODE}  
